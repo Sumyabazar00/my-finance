@@ -33,7 +33,7 @@ var financeController = (function () {
     this.value = value;
   };
   var data = {
-    allItems: {
+    items: {
       inc: [],
       exp: [],
     },
@@ -42,14 +42,34 @@ var financeController = (function () {
       exp: 0,
     },
   };
+  return {
+    addItem: function (type, desc, val) {
+      var item, id;
+      if (data.items[type].length === 0) id = 1;
+      else {
+        id = data.items[type][data.items[type].length - 1].id + 1;
+      }
+      if (type === "inc") {
+        item = new Income(id, desc, val);
+      } else {
+        //type=== exp
+        item = new Expense(id, desc, val);
+      }
+      data.items[type].push(item);
+    },
+    seeData: function () {
+      return data;
+    },
+  };
 })();
 
 //Программ холбогч контроллер
 var appController = (function (uiController, financeController) {
   var ctrlAddItem = function () {
     // 1. Оруулах өгөгдлийг дэлгэцээс олж авна.
-    console.log(uiController.getInput());
+    var input = uiController.getInput();
     // 2. Олж авсан өгөгдлүүдээ санхүүгийн контроллерт дамжуулж хадгална.
+    financeController.addItem(input.type, input.description, input.value);
     // 3. Олж авсан өгөгдлүүдээ дэлгэцэнд тохирох хэсэгт гаргана.
     // 4. Төсвийг тооцоолно.
     // 5. Эцсийн өгөгдөл тооцоог дэлгэцэнд гаргана.
@@ -67,7 +87,7 @@ var appController = (function (uiController, financeController) {
   };
   return {
     init: function () {
-      console.log("game started.....");
+      console.log("Application started.....");
       setupEventListener();
     },
   };
