@@ -21,6 +21,7 @@ var uiController = (function () {
     }
   };
   var formatMoney = function (too, type) {
+    too = "" + too;
     var x = too.split("").reverse().join("");
     var y = "";
     var count = 1;
@@ -33,6 +34,7 @@ var uiController = (function () {
     if (z[0] === ",") z = z.substr(1, z.length - 1);
     if (type === "inc") z = "+ " + z;
     else z = "- " + z;
+    return z;
   };
   return {
     displayDate: function () {
@@ -75,11 +77,21 @@ var uiController = (function () {
       // }
     },
     tusviigUzuuleh: function (tusuv) {
-      document.querySelector(DOMstring.tusuvLavel).textContent = tusuv.tusuv;
-      document.querySelector(DOMstring.incomeLabel).textContent =
-        tusuv.totalInc;
-      document.querySelector(DOMstring.expenseLabel).textContent =
-        tusuv.totalExp;
+      var type = "";
+      if (tusuv.tusuv > 0) type = "inc";
+      else type = "exp";
+      document.querySelector(DOMstring.tusuvLavel).textContent = formatMoney(
+        tusuv.tusuv,
+        type
+      );
+      document.querySelector(DOMstring.incomeLabel).textContent = formatMoney(
+        tusuv.totalInc,
+        "inc"
+      );
+      document.querySelector(DOMstring.expenseLabel).textContent = formatMoney(
+        tusuv.totalExp,
+        "exp"
+      );
       if (tusuv.huwi !== 0) {
         document.querySelector(DOMstring.percentageLabel).textContent =
           tusuv.huwi + "%";
@@ -98,16 +110,16 @@ var uiController = (function () {
       if (type === "inc") {
         list = DOMstring.incomeList;
         html =
-          '<div class="item clearfix" id="inc-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">+ $$VALUE$$</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+          '<div class="item clearfix" id="inc-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value"> $$VALUE$$</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       } else {
         list = DOMstring.expenseList;
         html =
-          '<div class="item clearfix" id="exp-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">- $$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+          '<div class="item clearfix" id="exp-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value"> $$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       }
       // Тэр html дотроо орлого зарлагын утгуудыг replace ашиглан өөрчилж өгнө.
       html = html.replace("%id%", item.id);
       html = html.replace("$$DESCRIPTION$$", item.description);
-      html = html.replace("$$VALUE$$", item.value);
+      html = html.replace("$$VALUE$$", formatMoney(item.value, type));
 
       // Бэлтгэсэн html ээ DOM руу хийж өгнө.
       document.querySelector(list).insertAdjacentHTML("beforeend", html);
