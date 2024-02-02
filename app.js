@@ -12,14 +12,50 @@ var uiController = (function () {
     expenseLabel: ".budget__expenses--value",
     percentageLabel: ".budget__expenses--percentage",
     containerDiv: ".container",
+    expensePercentageLabel: ".item__percentage",
+    dateLabel: ".budget__title--month",
+  };
+  var nodeListForeach = function (list, callback) {
+    for (var i = 0; i < list.length; i++) {
+      callback(list[i], i);
+    }
+  };
+  var formatMoney = function (too, type) {
+    var x = too.split("").reverse().join("");
+    var y = "";
+    var count = 1;
+    for (var i = 0; i < x.length; i++) {
+      y = y + x[i];
+      if (count % 3 === 0) y = y + ",";
+      count++;
+    }
+    var z = y.split("").reverse().join("");
+    if (z[0] === ",") z = z.substr(1, z.length - 1);
+    if (type === "inc") z = "+ " + z;
+    else z = "- " + z;
   };
   return {
+    displayDate: function () {
+      var unuudur = new Date();
+      document.querySelector(DOMstring.dateLabel).textContent =
+        unuudur.getFullYear() + " оны " + unuudur.getMonth() + " сарын";
+    },
     getInput: function () {
       return {
         type: document.querySelector(DOMstring.inputType).value,
         description: document.querySelector(DOMstring.inputDescription).value,
         value: parseInt(document.querySelector(DOMstring.inputValue).value),
       };
+    },
+    displayPercentages: function (allPercentages) {
+      // Зарлагын Nodelist-ийг олох
+      var elements = document.querySelectorAll(
+        DOMstring.expensePercentageLabel
+      );
+      // Элемент болгоны хувьд зарлагын хувийн массиваас авч шивж оруулна
+      nodeListForeach(elements, function (el, index) {
+        el.textContent = allPercentages[index];
+      });
     },
     getDOMstring: function () {
       return DOMstring;
@@ -215,7 +251,8 @@ var appController = (function (uiController, financeController) {
     // 8. Элементүүдийн хувийг тооцоолно
     var allPercentages = financeController.getPercentages();
     // 9. Эдгээр хувийг дэлгэцэнд гаргана
-    console.log(allPercentages);
+    uiController.displayPercentages(allPercentages);
+    f;
   };
   var setupEventListener = function () {
     var DOM = uiController.getDOMstring();
@@ -249,6 +286,7 @@ var appController = (function (uiController, financeController) {
   return {
     init: function () {
       console.log("Application started.....");
+      uiController.displayDate();
       uiController.tusviigUzuuleh({
         tusuv: 0,
         huwi: 0,
